@@ -102,6 +102,29 @@ def parse_line_index(difference: str) -> list:
     return ranges
 
 
+def insert_change_of_line(differences: tuple, index: int, widget: tkinter.Text,
+                          num_line: int):
+    '''
+    Add one line which is changed.
+    The reason for this function is that, when a line is totally changed, it is considered as removed;
+    when small part is changed, the next element of differences indicates the different chars.
+
+    Arguments:
+        differences: list of differences computed with difflib.
+        index: the index of the difference to check.
+        widget: where to write.
+        num_line: number of line of the index line, for font and style.
+    Returns:
+        A list of start-end index.
+    '''
+    if index + 1 < len(differences) and differences[index + 1][0] == '?':
+        widget.insert(tkinter.END, differences[index][2:] + '\n')
+        for r in parse_line_index(differences[index + 1][2:]):
+            widget.tag_add('diff', f'{num_line}.{r[0]}', f'{num_line}.{r[1]}')
+    else:
+        widget.insert(tkinter.END, differences[index][2:] + '\n', 'diff')
+
+
 def exec(_):
     lines1 = collect_lines('part1')
     lines2 = collect_lines('part2')
@@ -128,19 +151,12 @@ def exec(_):
             id_match = find_match(differences, index)
             line_total += 1
             if id_match > 0:
-                # this line is changed
-                widgets['part1_text'].insert(tkinter.END,
-                                             difference[2:] + '\n')
-                widgets['part2_text'].insert(tkinter.END,
-                                             differences[id_match][2:] + '\n')
-                for r in parse_line_index(differences[index + 1][2:]):
-                    widgets['part1_text'].tag_add('diff',
-                                                  f'{line_total}.{r[0]}',
-                                                  f'{line_total}.{r[1]}')
-                for r in parse_line_index(differences[id_match + 1][2:]):
-                    widgets['part2_text'].tag_add('diff',
-                                                  f'{line_total}.{r[0]}',
-                                                  f'{line_total}.{r[1]}')
+                assert id_match in (index + 1, index + 2), \
+                    'unmet new situation with more than one line of ?'
+                insert_change_of_line(differences, index,
+                                      widgets['part1_text'], line_total)
+                insert_change_of_line(differences, id_match,
+                                      widgets['part2_text'], line_total)
                 next_index = id_match + 1
             else:
                 # not match but starts with '-', part1 only
@@ -161,6 +177,6 @@ root.bind('<Return>', exec)
 #         ('hello', '1part11-is-changed1', 'belongs-1-to', 'world', 'you')))
 # widgets['part2_text'].insert(
 #     tkinter.END, '\n'.join(
-#         ('you', 'hello', '2part2-is-changed2', 'belongs-2-to', 'world')))
+#         ('you', 'hello', '2part2-is-changed2', 'belongs-2-to', 'world', 'me')))
 
 tkinter.mainloop()
