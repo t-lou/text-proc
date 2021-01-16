@@ -1,0 +1,7 @@
+{
+    "filters":
+    {
+        "has_abc": "abc",
+        "has_def": "def"
+    }
+}
