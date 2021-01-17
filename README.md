@@ -8,30 +8,46 @@
 
     If usage of Python is permitted, this can help.
 
-    # Test use
+    ## Use
 
     Past or type the two parts in text fields, then hit ENTER.
 
     The empty line will be skipped.
 
-    # Screenshot
+    ## Screenshot
 
     - input data
 
-    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/before.png)
+    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/text-diff-before.png)
 
     - output
 
-    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/after.png)
+    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/text-diff-after.png)
 
 - text_filter.py
 
     You may have a log file with different signals for different kinds of output. Such as: 'error1' for one type of error and 's-is-0-again' for another.
-    Notepad++ and other software can filter them perfectly, cat + grep also.
-    But at least I don't want to check the text for each search.
+    Notepad++ and other software can filter them perfectly, cat+grep also.
+    But at least I don't want to search for the text for each search.
 
     Thus I would like to save the options in config file and apply filtering with labeled feature.
 
-    Now only the lined with certain strings will be displayed.
+    Now only the lined with certain strings will be displayed. Regex and highlighting may come.
 
-    Other editing of filters will come. Maybe logics in filters.
+    ## Use
+
+    Paste the text in *original* tab, then switch to *filtered* tab for selection of filters.
+    Each filter is "NAME_FOR_SELECTION: LINE_WITH_THIS_STRING_IS_DISPLAYED".
+
+    In *filters* tab, the user can add (with name and text) and remove (with name) a filter.
+    When the change is successful, the program is reinitialized with text copied from last run.
+
+    ## Screenshot
+
+    - input data
+
+    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/text-filter-input.png)
+
+    - output
+
+    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/text-filter-output.png)

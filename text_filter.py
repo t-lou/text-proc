@@ -6,33 +6,46 @@ import os
 gWidgets = None
 kWidth = 20
 kHeight = 3
-gConfig = None
+kFilenameConfig = 'text_filter_config.json'
+kKeyFilter = 'filters'
 
 
 class Config(object):
     def __init__(self):
-        self._config_fn = 'text_filter_config.json'
         self._config = json.loads(open(
-            self._config_fn).read()) if os.path.isfile(
-                self._config_fn) else {}
-        self._name_filters = 'filters'
+            kFilenameConfig).read()) if os.path.isfile(kFilenameConfig) else {
+                kKeyFilter: {}
+            }
 
     def is_filter_valid(self):
-        return bool(
-            self._config) and self._name_filters in self._config and bool(
-                self._config[self._name_filters])
+        return bool(self._config) and kKeyFilter in self._config and bool(
+            self._config[kKeyFilter])
 
     def get_names(self) -> tuple:
         if self.is_filter_valid():
-            return tuple(self._config[self._name_filters].keys())
+            return tuple(self._config[kKeyFilter].keys())
         else:
             return tuple()
 
     def get_filter_text(self, name: str) -> str:
-        if self.is_filter_valid() and name in self._config[self._name_filters]:
-            return self._config[self._name_filters][name]
+        if self.is_filter_valid() and name in self._config[kKeyFilter]:
+            return self._config[kKeyFilter][name]
         else:
             return None
+
+    def add_filter(self, name: str, text: str):
+        assert self.is_filter_valid(), 'invalid config'
+        if kKeyFilter not in self._config:
+            self._config[kKeyFilter] = {}
+        self._config[kKeyFilter][name] = text
+
+    def remove_filter(self, name: str):
+        assert self.is_filter_valid() and name in self._config[kKeyFilter], \
+            f'filter {name} not found'
+        self._config[kKeyFilter].pop(name)
+
+    def save(self):
+        open(kFilenameConfig, 'w').write(json.dumps(self._config, indent=' '))
 
 
 def filter(_):
@@ -47,9 +60,29 @@ def filter(_):
     gWidgets['text_out'].config(state='disabled')
 
 
+def add_filter():
+    name = gWidgets['text_filter_name'].get('1.0', tkinter.END).strip()
+    text = gWidgets['text_filter_text'].get('1.0', tkinter.END).strip()
+    gWidgets['config'].add_filter(name, text)
+    gWidgets['config'].save()
+    init_gui()
+
+
+def remove_filter():
+    name = gWidgets['text_filter_name'].get('1.0', tkinter.END).strip()
+    gWidgets['config'].remove_filter(name)
+    gWidgets['config'].save()
+    init_gui()
+
+
 def init_gui():
     global gWidgets
-    gWidgets = {'root': tkinter.Tk()}
+    text_in = None
+    # destroy and reinit if it is created
+    if bool(gWidgets) and 'root' in gWidgets:
+        text_in = gWidgets['text_in'].get('1.0', tkinter.END)
+        gWidgets['root'].destroy()
+    gWidgets = {'root': tkinter.Tk(), 'config': Config()}
     gWidgets['root'].title('TextFilter')
 
     tab_container = tkinter.ttk.Notebook(gWidgets['root'])
@@ -57,47 +90,78 @@ def init_gui():
     # main tab for input text
     frame_original = tkinter.Frame(tab_container)
     gWidgets['text_in'] = tkinter.Text(frame_original)
-    gWidgets['text_in'].pack(fill=tkinter.BOTH)
+    gWidgets['text_in'].pack(expand=tkinter.YES, fill=tkinter.BOTH)
+    if text_in is not None:
+        gWidgets['text_in'].insert(tkinter.END, text_in)
     tab_container.add(frame_original, text='original')
 
     # main tab for output text
     frame_filtered = tkinter.Frame(tab_container)
-    frame_filter = tkinter.Frame(frame_filtered)
-    tkinter.Button(frame_filter,
+    frame_filtered_filter = tkinter.Frame(frame_filtered)
+    tkinter.Button(frame_filtered_filter,
                    height=kHeight,
                    width=kWidth,
                    text='update',
                    command=lambda: filter(None)).pack(side=tkinter.TOP)
-    gWidgets['listbox_filters'] = tkinter.Listbox(frame_filter,
+    gWidgets['listbox_filters'] = tkinter.Listbox(frame_filtered_filter,
                                                   width=kWidth,
                                                   selectmode=tkinter.MULTIPLE)
     gWidgets['filter_match'] = {}
-    for name in gConfig.get_names():
-        text = f'{name}: {gConfig.get_filter_text(name)}'
+    for name in gWidgets['config'].get_names():
+        text = f'{name}: {gWidgets["config"].get_filter_text(name)}'
         gWidgets['listbox_filters'].insert(tkinter.END, text)
-        gWidgets['filter_match'][text] = gConfig.get_filter_text(name)
-    gWidgets['listbox_filters'].bind("<<ListboxSelect>>", filter)
+        gWidgets['filter_match'][text] = gWidgets['config'].get_filter_text(
+            name)
+    gWidgets['listbox_filters'].bind('<<ListboxSelect>>', filter)
     gWidgets['listbox_filters'].pack(side=tkinter.TOP)
-    frame_filter.pack(side=tkinter.LEFT)
-    frame_output = tkinter.Frame(frame_filtered)
+    frame_filtered_filter.pack(side=tkinter.LEFT)
+    frame_filtered_output = tkinter.Frame(frame_filtered)
     gWidgets['text_out'] = tkinter.Text(frame_filtered, state=tkinter.DISABLED)
     gWidgets['text_out'].bind('<1>',
                               lambda event: gWidgets['text_out'].focus_set())
-    gWidgets['text_out'].pack(fill=tkinter.BOTH)
-    frame_output.pack(side=tkinter.LEFT)
+    gWidgets['text_out'].pack(expand=tkinter.YES, fill=tkinter.BOTH)
+    frame_filtered_output.pack(side=tkinter.LEFT,
+                               expand=tkinter.YES,
+                               fill=tkinter.BOTH)
     tab_container.add(frame_filtered, text='filtered')
 
-    tab_container.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+    # main tab for editing filters
+    frame_filter_handler = tkinter.Frame(tab_container)
+    gWidgets['text_filter_name'] = tkinter.Text(frame_filter_handler,
+                                                height=kHeight,
+                                                width=kWidth)
+    gWidgets['text_filter_text'] = tkinter.Text(frame_filter_handler,
+                                                height=kHeight,
+                                                width=kWidth)
+    tkinter.Label(frame_filter_handler, text='name').pack()
+    gWidgets['text_filter_name'].pack(side=tkinter.TOP)
+    tkinter.Label(frame_filter_handler, text='text').pack()
+    gWidgets['text_filter_text'].pack(side=tkinter.TOP)
+    tkinter.Button(frame_filter_handler,
+                   height=kHeight,
+                   width=kWidth,
+                   text='add',
+                   command=add_filter).pack(side=tkinter.TOP)
+    tkinter.Button(frame_filter_handler,
+                   height=kHeight,
+                   width=kWidth,
+                   text='remove',
+                   command=remove_filter).pack(side=tkinter.TOP)
+    tab_container.add(frame_filter_handler, text='filters')
+
+    tab_container.pack(expand=tkinter.YES, fill=tkinter.BOTH)
 
 
 if __name__ == '__main__':
     # # TODO for test
-    # open('text_filter_config.json', 'w').write(
+    # open(kFilenameConfig, 'w').write(
     #     json.dumps(
-    #         {'filters': {f'has_{c}': c
-    #                      for c in 'abcdefghijklmnopgrqtuvwxyz'}},
+    #         {
+    #             kKeyFilter:
+    #             {f'has_{c}': c
+    #              for c in 'abcdefghijklmnopgrqtuvwxyz'}
+    #         },
     #         indent=' '))
-    gConfig = Config()
     init_gui()
     # # TODO for test
     # gWidgets['text_in'].insert(
