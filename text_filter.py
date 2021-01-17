@@ -5,7 +5,7 @@ import os
 
 gWidgets = None
 kWidth = 20
-kHeight = 5
+kHeight = 3
 gConfig = None
 
 
@@ -35,11 +35,14 @@ class Config(object):
             return None
 
 
-def filter(text: str):
+def filter(_):
     gWidgets['text_out'].config(state='normal')
     gWidgets['text_out'].delete('1.0', tkinter.END)
+    selected = set(gWidgets['listbox_filters'].get(i)
+                   for i in gWidgets['listbox_filters'].curselection())
     for line in gWidgets['text_in'].get('1.0', tkinter.END).split('\n'):
-        if text is None or text in line:
+        if not bool(selected) or any(gWidgets['filter_match'][n] in line
+                                     for n in selected):
             gWidgets['text_out'].insert(tkinter.END, line + '\n')
     gWidgets['text_out'].config(state='disabled')
 
@@ -60,23 +63,26 @@ def init_gui():
     # main tab for output text
     frame_filtered = tkinter.Frame(tab_container)
     frame_filter = tkinter.Frame(frame_filtered)
-    tkinter.Button(
-        frame_filter,
-        text='<>',
-        width=kWidth,
-        height=kHeight,
-        command=lambda text=None: filter(text)).pack(side=tkinter.TOP)
+    tkinter.Button(frame_filter,
+                   height=kHeight,
+                   width=kWidth,
+                   text='update',
+                   command=lambda: filter(None)).pack(side=tkinter.TOP)
+    gWidgets['listbox_filters'] = tkinter.Listbox(frame_filter,
+                                                  width=kWidth,
+                                                  selectmode=tkinter.MULTIPLE)
+    gWidgets['filter_match'] = {}
     for name in gConfig.get_names():
-        name_w = f'button_filter_{name}'
-        tkinter.Button(frame_filter,
-                       text=f'{name}:\n{gConfig.get_filter_text(name)}',
-                       width=kWidth,
-                       height=kHeight,
-                       command=lambda text=gConfig.get_filter_text(name):
-                       filter(text)).pack(side=tkinter.TOP)
+        text = f'{name}: {gConfig.get_filter_text(name)}'
+        gWidgets['listbox_filters'].insert(tkinter.END, text)
+        gWidgets['filter_match'][text] = gConfig.get_filter_text(name)
+    gWidgets['listbox_filters'].bind("<<ListboxSelect>>", filter)
+    gWidgets['listbox_filters'].pack(side=tkinter.TOP)
     frame_filter.pack(side=tkinter.LEFT)
     frame_output = tkinter.Frame(frame_filtered)
     gWidgets['text_out'] = tkinter.Text(frame_filtered, state=tkinter.DISABLED)
+    gWidgets['text_out'].bind('<1>',
+                              lambda event: gWidgets['text_out'].focus_set())
     gWidgets['text_out'].pack(fill=tkinter.BOTH)
     frame_output.pack(side=tkinter.LEFT)
     tab_container.add(frame_filtered, text='filtered')
@@ -85,8 +91,16 @@ def init_gui():
 
 
 if __name__ == '__main__':
+    # # TODO for test
+    # open('text_filter_config.json', 'w').write(
+    #     json.dumps(
+    #         {'filters': {f'has_{c}': c
+    #                      for c in 'abcdefghijklmnopgrqtuvwxyz'}},
+    #         indent=' '))
     gConfig = Config()
     init_gui()
-    # for test
-    gWidgets['text_in'].insert(tkinter.END, '\n'.join(('abc', 'def', 'hgi')))
+    # # TODO for test
+    # gWidgets['text_in'].insert(
+    #     tkinter.END, '\n'.join(
+    #         ('abc', 'bcd', 'cde', 'def', 'efg', 'fgh', 'ghi')))
     tkinter.mainloop()
