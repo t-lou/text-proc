@@ -18,8 +18,8 @@ class Config(object):
             }
 
     def is_filter_valid(self):
-        return bool(self._config) and kKeyFilter in self._config and bool(
-            self._config[kKeyFilter])
+        return bool(self._config) and kKeyFilter in self._config and type(
+            self._config) == dict
 
     def get_names(self) -> tuple:
         if self.is_filter_valid():
@@ -51,11 +51,13 @@ class Config(object):
 def filter(_):
     gWidgets['text_out'].config(state='normal')
     gWidgets['text_out'].delete('1.0', tkinter.END)
-    selected = set(gWidgets['listbox_filters'].get(i)
+    selected = set(gWidgets['filter_match'][gWidgets['listbox_filters'].get(i)]
                    for i in gWidgets['listbox_filters'].curselection())
+    filter_custom = gWidgets['filter_custom'].get('1.0', tkinter.END).strip()
+    if bool(filter_custom):
+        selected.add(filter_custom)
     for line in gWidgets['text_in'].get('1.0', tkinter.END).split('\n'):
-        if not bool(selected) or any(gWidgets['filter_match'][n] in line
-                                     for n in selected):
+        if not bool(selected) or any(p in line for p in selected):
             gWidgets['text_out'].insert(tkinter.END, line + '\n')
     gWidgets['text_out'].config(state='disabled')
 
@@ -112,8 +114,13 @@ def init_gui():
         gWidgets['listbox_filters'].insert(tkinter.END, text)
         gWidgets['filter_match'][text] = gWidgets['config'].get_filter_text(
             name)
+    gWidgets['filter_custom'] = tkinter.Text(frame_filtered_filter,
+                                             height=kHeight,
+                                             width=kWidth)
     gWidgets['listbox_filters'].bind('<<ListboxSelect>>', filter)
     gWidgets['listbox_filters'].pack(side=tkinter.TOP)
+    tkinter.Label(frame_filtered_filter, text='custom').pack()
+    gWidgets['filter_custom'].pack(side=tkinter.TOP)
     frame_filtered_filter.pack(side=tkinter.LEFT)
     frame_filtered_output = tkinter.Frame(frame_filtered)
     gWidgets['text_out'] = tkinter.Text(frame_filtered, state=tkinter.DISABLED)
