@@ -31,6 +31,9 @@ def prepare_text(name: str):
     widgets[name_text].tag_configure('diff',
                                      foreground='red',
                                      background='yellow')
+    widgets[name_text].tag_configure('should-partial',
+                                     foreground='black',
+                                     background='yellow')
 
 
 def collect_lines(name: str) -> tuple:
@@ -84,9 +87,9 @@ def parse_line_index(difference: str) -> list:
     ranges = []
     target = '^'
     for i, d in enumerate(difference[:-1]):
-        if last_index < 0 and d == target:
+        if last_index < 0 and d != ' ':
             last_index = i
-        elif last_index >= 0 and d != target:
+        elif last_index >= 0 and d == ' ':
             ranges.append((last_index, i))
             last_index = -1
     if last_index >= 0:
@@ -114,7 +117,9 @@ def insert_change_of_line(differences: tuple, index: int, widget: tkinter.Text,
         for r in parse_line_index(differences[index + 1][2:]):
             widget.tag_add('diff', f'{num_line}.{r[0]}', f'{num_line}.{r[1]}')
     else:
-        widget.insert(tkinter.END, differences[index][2:] + '\n', 'diff')
+        # this line should be partially changed only, mark with less distinction for safety
+        widget.insert(tkinter.END, differences[index][2:] + '\n',
+                      'should-partial')
 
 
 def exec():
@@ -196,37 +201,37 @@ frame_button.pack(expand=tkinter.YES, fill=tkinter.X)
 #         ('you', 'hello', '2part2-is-changed2', 'belongs-2-to', 'world', 'me')))
 
 # # TODO for testing
-widgets['part1_text'].insert(
-    tkinter.END, """Lorem ipsum dolor sit amet
-consetetur sadipscing elitr
-sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
-sed diam voluptua
-At vero eos et accusam et justo duo dolores et ea rebum
-Stet clita kasd gubergren
-no sea takimata sanctus est Lorem ipsum dolor sit amet
-Lorem ipsum dolor sit amet
-consetetur sadipscing elitr
-sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
-sed diam voluptua
-At vero eos et accusam et justo duo dolores et ea rebum
-Stet clita kasd gubergren
-no sea takimata sanctus est Lorem ipsum dolor sit amet
-""" * 20)
-widgets['part2_text'].insert(
-    tkinter.END, """Lorem ipsum dolor sit amet
-consetetur sadipscing elitr
-sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
-sed diam voluptua
-At vero eos et accusam et justo duo dolores et ea rebum
-Stet clita kasd gubergren
-no sea takimata sanctus est Lorem ipsum dolor sit amet
-Lorem ipsum dolor sit amet
-consetetur sadipscing elitr
-sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
-sed diam voluptua
-At vero eos et accusam et justo duo dolores et ea rebum
-Stet clita kasd gubergren
-no sea takimata sanctus est Lorem ipsum dolor sit amet
-""" * 20)
+# widgets['part1_text'].insert(
+#     tkinter.END, """Lorem ipsum dolor sit amet
+# consetetur sadipscing elitr
+# sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+# sed diam voluptua
+# At vero eos et accusam et justo duo dolores et ea rebum
+# Stet clita kasd gubergren
+# no sea takimata sanctus est Lorem ipsum dolor sit amet
+# Lorem ipsum dolor sit amet
+# consetetur sadipscing elitr
+# sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+# sed diam voluptua
+# At vero eos et accusam et justo duo dolores et ea rebum
+# Stet clita kasd gubergren
+# no sea takimata sanctus est Lorem ipsum dolor sit amet
+# """ * 20)
+# widgets['part2_text'].insert(
+#     tkinter.END, """Lorem ipsum dolor sit amet
+# consetetur sadipscing elitr
+# sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+# sed diam voluptua
+# At vero eos et accusam et justo duo dolores et ea rebum
+# Stet clita kasd gubergren
+# no sea takimata sanctus est Lorem ipsum dolor sit amet
+# Lorem ipsum dolor sit amet
+# consetetur sadipscing elitr
+# sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+# sed diam voluptua
+# At vero eos et accusam et justo duo dolores et ea rebum
+# Stet clita kasd gubergren
+# no sea takimata sanctus est Lorem ipsum dolor sit amet
+# """ * 20)
 
 tkinter.mainloop()
