@@ -135,7 +135,9 @@ def exec(_):
     lines1 = collect_lines('part1')
     lines2 = collect_lines('part2')
     widgets['line_text'].delete('1.0', tkinter.END)
-    differences = tuple(difflib.Differ().compare(lines1, lines2))
+    differences = tuple(d for d in difflib.Differ().compare(lines1, lines2))
+    print('\n'.join(differences))
+    print('\n' + ('#' * 80 + '\n') * 3)
     line_total = 0
     next_index = -1
     for index, difference in enumerate(differences):
