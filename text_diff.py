@@ -10,11 +10,17 @@ widgets[line_text] = tkinter.Text(root, height=50, width=4)
 widgets[line_text].pack(side=tkinter.LEFT, fill=tkinter.Y)
 
 
-def scroll(*args):
+def on_scroll_scrollbar(*args):
     # for scrolling at the same time
     for widget in widgets:
         if widget.endswith('_text'):
             widgets[widget].yview(*args)
+
+
+def on_scroll_text(*args):
+    widgets['scrollbar'].set(*args)
+    # https://stackoverflow.com/questions/32038701/python-tkinter-making-two-text-widgets-scrolling-synchronize/35824343
+    on_scroll_scrollbar('moveto', args[0])
 
 
 def prepare_text(name: str):
@@ -34,11 +40,11 @@ prepare_text('part2')
 
 widgets['scrollbar'] = tkinter.Scrollbar(root,
                                          orient=tkinter.VERTICAL,
-                                         command=scroll)
+                                         command=on_scroll_scrollbar)
 widgets['scrollbar'].pack(side=tkinter.RIGHT, fill=tkinter.Y)
 for widget in widgets:
     if widget.endswith('_text'):
-        widgets[widget].config(yscrollcommand=widgets['scrollbar'].set)
+        widgets[widget].config(yscrollcommand=on_scroll_text)
 
 
 def collect_lines(name: str) -> tuple:
@@ -178,5 +184,39 @@ root.bind('<Return>', exec)
 # widgets['part2_text'].insert(
 #     tkinter.END, '\n'.join(
 #         ('you', 'hello', '2part2-is-changed2', 'belongs-2-to', 'world', 'me')))
+
+# # TODO for testing
+widgets['part1_text'].insert(
+    tkinter.END, """Lorem ipsum dolor sit amet
+consetetur sadipscing elitr
+sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+sed diam voluptua
+At vero eos et accusam et justo duo dolores et ea rebum
+Stet clita kasd gubergren
+no sea takimata sanctus est Lorem ipsum dolor sit amet
+Lorem ipsum dolor sit amet
+consetetur sadipscing elitr
+sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+sed diam voluptua
+At vero eos et accusam et justo duo dolores et ea rebum
+Stet clita kasd gubergren
+no sea takimata sanctus est Lorem ipsum dolor sit amet
+""" * 20)
+widgets['part2_text'].insert(
+    tkinter.END, """Lorem ipsum dolor sit amet
+consetetur sadipscing elitr
+sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+sed diam voluptua
+At vero eos et accusam et justo duo dolores et ea rebum
+Stet clita kasd gubergren
+no sea takimata sanctus est Lorem ipsum dolor sit amet
+Lorem ipsum dolor sit amet
+consetetur sadipscing elitr
+sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat
+sed diam voluptua
+At vero eos et accusam et justo duo dolores et ea rebum
+Stet clita kasd gubergren
+no sea takimata sanctus est Lorem ipsum dolor sit amet
+""" * 20)
 
 tkinter.mainloop()
