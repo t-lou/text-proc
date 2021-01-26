@@ -5,10 +5,6 @@ root = tkinter.Tk()
 root.title('TextDiff')
 widgets = dict()
 
-line_text = 'line_text'
-widgets[line_text] = tkinter.Text(root, height=50, width=4)
-widgets[line_text].pack(side=tkinter.LEFT, fill=tkinter.Y)
-
 
 def on_scroll_scrollbar(*args):
     # for scrolling at the same time
@@ -27,24 +23,14 @@ def prepare_text(name: str):
     # to initialize a text widget
     assert all(not widget.startswith(name + '_') for widget in widgets)
     name_text = name + '_text'
-    widgets[name_text] = tkinter.Text(root, height=50, width=80)
-    widgets[name_text].pack(side=tkinter.LEFT, fill=tkinter.Y)
+    widgets[name_text] = tkinter.Text(frame_texts, height=50, width=80)
+    widgets[name_text].pack(side=tkinter.LEFT,
+                            expand=tkinter.YES,
+                            fill=tkinter.BOTH)
     # config for difference
     widgets[name_text].tag_configure('diff',
                                      foreground='red',
                                      background='yellow')
-
-
-prepare_text('part1')
-prepare_text('part2')
-
-widgets['scrollbar'] = tkinter.Scrollbar(root,
-                                         orient=tkinter.VERTICAL,
-                                         command=on_scroll_scrollbar)
-widgets['scrollbar'].pack(side=tkinter.RIGHT, fill=tkinter.Y)
-for widget in widgets:
-    if widget.endswith('_text'):
-        widgets[widget].config(yscrollcommand=on_scroll_text)
 
 
 def collect_lines(name: str) -> tuple:
@@ -131,7 +117,7 @@ def insert_change_of_line(differences: tuple, index: int, widget: tkinter.Text,
         widget.insert(tkinter.END, differences[index][2:] + '\n', 'diff')
 
 
-def exec(_):
+def exec():
     lines1 = collect_lines('part1')
     lines2 = collect_lines('part2')
     widgets['line_text'].delete('1.0', tkinter.END)
@@ -177,7 +163,29 @@ def exec(_):
         '\n'.join(tuple('{:4}'.format(i) for i in range(1, line_total + 1))))
 
 
-root.bind('<Return>', exec)
+frame_texts = tkinter.Frame(root)
+frame_button = tkinter.Frame(root)
+
+widgets['line_text'] = tkinter.Text(frame_texts, height=50, width=4)
+widgets['line_text'].pack(side=tkinter.LEFT, fill=tkinter.Y)
+prepare_text('part1')
+prepare_text('part2')
+
+widgets['scrollbar'] = tkinter.Scrollbar(frame_texts,
+                                         orient=tkinter.VERTICAL,
+                                         command=on_scroll_scrollbar)
+widgets['scrollbar'].pack(side=tkinter.RIGHT, fill=tkinter.Y)
+for widget in widgets:
+    if widget.endswith('_text'):
+        widgets[widget].config(yscrollcommand=on_scroll_text)
+
+tkinter.Button(frame_button, height=3, text='compare',
+               command=exec).pack(side=tkinter.BOTTOM,
+                                  expand=tkinter.YES,
+                                  fill=tkinter.X)
+
+frame_texts.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+frame_button.pack(expand=tkinter.YES, fill=tkinter.X)
 
 # # TODO for testing
 # widgets['part1_text'].insert(
