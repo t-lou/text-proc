@@ -87,25 +87,16 @@ def init_gui():
     gWidgets = {'root': tkinter.Tk(), 'config': Config()}
     gWidgets['root'].title('TextFilter')
 
-    tab_container = tkinter.ttk.Notebook(gWidgets['root'])
-
-    # main tab for input text
-    frame_original = tkinter.Frame(tab_container)
-    gWidgets['text_in'] = tkinter.Text(frame_original)
-    gWidgets['text_in'].pack(expand=tkinter.YES, fill=tkinter.BOTH)
-    if text_in is not None:
-        gWidgets['text_in'].insert(tkinter.END, text_in)
-    tab_container.add(frame_original, text='original')
-
-    # main tab for output text
-    frame_filtered = tkinter.Frame(tab_container)
-    frame_filtered_filter = tkinter.Frame(frame_filtered)
-    tkinter.Button(frame_filtered_filter,
+    frame_filter_related = tkinter.Frame(gWidgets['root'])
+    # for selecting filters
+    frame_filtering = tkinter.Frame(frame_filter_related)
+    tkinter.Label(frame_filtering, text='filters\n').pack(side=tkinter.TOP)
+    tkinter.Button(frame_filtering,
                    height=kHeight,
                    width=kWidth,
                    text='update',
                    command=lambda: filter(None)).pack(side=tkinter.TOP)
-    gWidgets['listbox_filters'] = tkinter.Listbox(frame_filtered_filter,
+    gWidgets['listbox_filters'] = tkinter.Listbox(frame_filtering,
                                                   width=kWidth,
                                                   selectmode=tkinter.MULTIPLE)
     gWidgets['filter_match'] = {}
@@ -114,49 +105,61 @@ def init_gui():
         gWidgets['listbox_filters'].insert(tkinter.END, text)
         gWidgets['filter_match'][text] = gWidgets['config'].get_filter_text(
             name)
-    gWidgets['filter_custom'] = tkinter.Text(frame_filtered_filter,
+    gWidgets['filter_custom'] = tkinter.Text(frame_filtering,
                                              height=kHeight,
                                              width=kWidth)
     gWidgets['listbox_filters'].bind('<<ListboxSelect>>', filter)
     gWidgets['listbox_filters'].pack(side=tkinter.TOP)
-    tkinter.Label(frame_filtered_filter, text='custom').pack()
+    tkinter.Label(frame_filtering, text='custom').pack()
     gWidgets['filter_custom'].pack(side=tkinter.TOP)
-    frame_filtered_filter.pack(side=tkinter.LEFT)
-    frame_filtered_output = tkinter.Frame(frame_filtered)
-    gWidgets['text_out'] = tkinter.Text(frame_filtered, state=tkinter.DISABLED)
-    gWidgets['text_out'].bind('<1>',
-                              lambda event: gWidgets['text_out'].focus_set())
-    gWidgets['text_out'].pack(expand=tkinter.YES, fill=tkinter.BOTH)
-    frame_filtered_output.pack(side=tkinter.LEFT,
-                               expand=tkinter.YES,
-                               fill=tkinter.BOTH)
-    tab_container.add(frame_filtered, text='filtered')
 
-    # main tab for editing filters
-    frame_filter_handler = tkinter.Frame(tab_container)
-    gWidgets['text_filter_name'] = tkinter.Text(frame_filter_handler,
+    frame_filtering.pack(side=tkinter.TOP)
+
+    tkinter.Label(frame_filter_related, text='\n' * 3).pack(side=tkinter.TOP)
+
+    # for editing filters
+    frame_filter_config = tkinter.Frame(frame_filter_related)
+    tkinter.Label(frame_filter_config,
+                  text='filter config\n').pack(side=tkinter.TOP)
+    gWidgets['text_filter_name'] = tkinter.Text(frame_filter_config,
                                                 height=kHeight,
                                                 width=kWidth)
-    gWidgets['text_filter_text'] = tkinter.Text(frame_filter_handler,
+    gWidgets['text_filter_text'] = tkinter.Text(frame_filter_config,
                                                 height=kHeight,
                                                 width=kWidth)
-    tkinter.Label(frame_filter_handler, text='name').pack()
+    tkinter.Label(frame_filter_config, text='name').pack()
     gWidgets['text_filter_name'].pack(side=tkinter.TOP)
-    tkinter.Label(frame_filter_handler, text='text').pack()
+    tkinter.Label(frame_filter_config, text='text').pack()
     gWidgets['text_filter_text'].pack(side=tkinter.TOP)
-    tkinter.Button(frame_filter_handler,
+    tkinter.Button(frame_filter_config,
                    height=kHeight,
                    width=kWidth,
                    text='add',
                    command=add_filter).pack(side=tkinter.TOP)
-    tkinter.Button(frame_filter_handler,
+    tkinter.Button(frame_filter_config,
                    height=kHeight,
                    width=kWidth,
                    text='remove',
                    command=remove_filter).pack(side=tkinter.TOP)
-    tab_container.add(frame_filter_handler, text='filters')
+    frame_filter_config.pack(side=tkinter.TOP)
+    frame_filter_related.pack(side=tkinter.LEFT)
 
-    tab_container.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+    gWidgets['text_in'] = tkinter.Text(gWidgets['root'], height=60, width=80)
+    gWidgets['text_in'].pack(side=tkinter.LEFT,
+                             expand=tkinter.YES,
+                             fill=tkinter.BOTH)
+    if text_in is not None:
+        gWidgets['text_in'].insert(tkinter.END, text_in)
+
+    gWidgets['text_out'] = tkinter.Text(gWidgets['root'],
+                                        height=60,
+                                        width=80,
+                                        state=tkinter.DISABLED)
+    gWidgets['text_out'].bind('<1>',
+                              lambda event: gWidgets['text_out'].focus_set())
+    gWidgets['text_out'].pack(side=tkinter.LEFT,
+                              expand=tkinter.YES,
+                              fill=tkinter.BOTH)
 
 
 if __name__ == '__main__':
