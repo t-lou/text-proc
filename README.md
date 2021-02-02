@@ -51,3 +51,27 @@
     - output
 
     ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/text-filter-output.png)
+
+- csv-extractor.py
+
+    When I need to find the elements in a CSV file with the expected items. Such as, I have a CSV for contact persons and want to read the firstnames
+    with a list of given lastnames.
+
+    ## Use
+
+    Click *open* to open a CSV file;
+    targets are the list of items to find under fieldname *input column* in CSV, separated with "," or newline;
+    *output columns* are the fields to show and export, default value is the original headers;
+    *extract* filters the CSV content;
+    *save* the displayed content to a new CSV file.
+    
+
+    ## Screenshot
+
+    - input (left) and output (right) CSV files
+
+    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/csv-extractor-io.png)
+
+    - panel for processing
+
+    ![image](https://github.com/t-lou/text-diff/blob/master/screenshots/csv-extractor-edit.png)
