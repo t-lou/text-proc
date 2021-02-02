@@ -116,7 +116,7 @@ tkinter.Label(frame_widget, text='input column').pack(side=tkinter.TOP)
 text_in_column = tkinter.Text(frame_widget, width=kHeightButton, height=2)
 text_in_column.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
 
-tkinter.Label(frame_widget, text='output column').pack(side=tkinter.TOP)
+tkinter.Label(frame_widget, text='output columns').pack(side=tkinter.TOP)
 text_out_column = tkinter.Text(frame_widget, width=kHeightButton, height=2)
 text_out_column.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
 
@@ -167,6 +167,7 @@ text_summary_csv = tkinter.Text(frame_widget,
                                 height=2,
                                 state=tkinter.DISABLED)
 text_summary_csv.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+text_summary_csv.bind('<1>', lambda event: text_summary_csv.focus_set())
 
 tkinter.Label(frame_widget, text='summary match').pack(side=tkinter.TOP)
 text_summary_match = tkinter.Text(frame_widget,
