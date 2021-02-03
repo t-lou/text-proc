@@ -2,12 +2,15 @@ import tkinter
 import tkinter.ttk
 import tkinter.filedialog
 import csv
+import sys
 
 kWidthButton = 40
 kHeightButton = 3
 kWidthText = 100
 
 gData = {}
+
+kEncoding = 'latin-1' if sys.platform == 'win32' else 'utf-8'
 
 
 def parse_items(text: str) -> tuple:
@@ -44,7 +47,7 @@ def func_open():
 
     filename = tkinter.filedialog.askopenfilename(filetypes=[('CSV', '.csv')])
     if bool(filename):
-        with open(filename, 'r') as fi:
+        with open(filename, 'r', encoding=kEncoding) as fi:
             reader = csv.DictReader(fi)
             gData['table'] = tuple(row for row in reader)
             gData['fieldnames'] = tuple(reader.fieldnames)
@@ -100,7 +103,7 @@ def func_save():
         if bool(filename):
             filename = filename if filename.endswith(
                 '.csv') else filename + '.csv'
-        with open(filename, 'w', newline='') as fs:
+        with open(filename, 'w', newline='', encoding=kEncoding) as fs:
             writer = csv.DictWriter(fs, fieldnames=column_out)
             writer.writeheader()
             for row in gData['selected']:
