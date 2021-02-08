@@ -1,5 +1,5 @@
 import tkinter
-import tkinter.ttk
+import tkinter.filedialog
 import json
 import os
 
@@ -48,7 +48,7 @@ class Config(object):
         open(kFilenameConfig, 'w').write(json.dumps(self._config, indent=' '))
 
 
-def filter(_):
+def filter():
     gWidgets['text_out'].config(state='normal')
     gWidgets['text_out'].delete('1.0', tkinter.END)
     selected = set(gWidgets['filter_match'][gWidgets['listbox_filters'].get(i)]
@@ -60,6 +60,21 @@ def filter(_):
         if not bool(selected) or any(p in line for p in selected):
             gWidgets['text_out'].insert(tkinter.END, line + '\n')
     gWidgets['text_out'].config(state='disabled')
+
+
+def load_text():
+    filename = tkinter.filedialog.askopenfilename()
+    if bool(filename):
+        gWidgets['text_in'].delete('1.0', tkinter.END)
+        with open(filename, 'r') as fs:
+            gWidgets['text_in'].insert(tkinter.END, fs.read())
+
+
+def save_text():
+    filename = tkinter.filedialog.asksaveasfilename()
+    if bool(filename):
+        with open(filename, 'w') as fs:
+            fs.write(gWidgets['text_out'].get('1.0', tkinter.END))
 
 
 def add_filter():
@@ -95,7 +110,7 @@ def init_gui():
                    height=kHeight,
                    width=kWidth,
                    text='update',
-                   command=lambda: filter(None)).pack(side=tkinter.TOP)
+                   command=filter).pack(side=tkinter.TOP)
     gWidgets['listbox_filters'] = tkinter.Listbox(frame_filtering,
                                                   width=kWidth,
                                                   selectmode=tkinter.MULTIPLE)
@@ -112,6 +127,18 @@ def init_gui():
     gWidgets['listbox_filters'].pack(side=tkinter.TOP)
     tkinter.Label(frame_filtering, text='custom').pack()
     gWidgets['filter_custom'].pack(side=tkinter.TOP)
+
+    tkinter.Button(frame_filtering,
+                   height=kHeight,
+                   width=kWidth,
+                   text='load text',
+                   command=load_text).pack(side=tkinter.TOP)
+
+    tkinter.Button(frame_filtering,
+                   height=kHeight,
+                   width=kWidth,
+                   text='save text',
+                   command=save_text).pack(side=tkinter.TOP)
 
     frame_filtering.pack(side=tkinter.TOP)
 
