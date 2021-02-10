@@ -48,7 +48,7 @@ class Config(object):
         open(kFilenameConfig, 'w').write(json.dumps(self._config, indent=' '))
 
 
-def filter():
+def filter(_):
     gWidgets['text_out'].config(state='normal')
     gWidgets['text_out'].delete('1.0', tkinter.END)
     selected = set(gWidgets['filter_match'][gWidgets['listbox_filters'].get(i)]
@@ -110,7 +110,7 @@ def init_gui():
                    height=kHeight,
                    width=kWidth,
                    text='update',
-                   command=filter).pack(side=tkinter.TOP)
+                   command=lambda: filter(None)).pack(side=tkinter.TOP)
     gWidgets['listbox_filters'] = tkinter.Listbox(frame_filtering,
                                                   width=kWidth,
                                                   selectmode=tkinter.MULTIPLE)
