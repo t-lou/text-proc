@@ -24,16 +24,13 @@ def prepare_text(name: str):
     assert all(not widget.startswith(name + '_') for widget in widgets)
     name_text = name + '_text'
     widgets[name_text] = tkinter.Text(frame_texts, height=50, width=80)
-    widgets[name_text].pack(side=tkinter.LEFT,
-                            expand=tkinter.YES,
-                            fill=tkinter.BOTH)
+    widgets[name_text].pack(
+        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
     # config for difference
-    widgets[name_text].tag_configure('diff',
-                                     foreground='red',
-                                     background='yellow')
-    widgets[name_text].tag_configure('should-partial',
-                                     foreground='black',
-                                     background='yellow')
+    widgets[name_text].tag_configure(
+        'diff', foreground='red', background='yellow')
+    widgets[name_text].tag_configure(
+        'should-partial', foreground='black', background='yellow')
 
 
 def collect_lines(name: str) -> tuple:
@@ -164,8 +161,8 @@ def exec():
                 widgets['part2_text'].insert(tkinter.END, '\n', 'diff')
         # implicit: difference is '? *', they should be skipped due to part of "line is changed" condition
     widgets['line_text'].insert(
-        tkinter.END,
-        '\n'.join(tuple('{:4}'.format(i) for i in range(1, line_total + 1))))
+        tkinter.END, '\n'.join(
+            tuple('{:4}'.format(i) for i in range(1, line_total + 1))))
 
 
 frame_texts = tkinter.Frame(root)
@@ -176,18 +173,16 @@ widgets['line_text'].pack(side=tkinter.LEFT, fill=tkinter.Y)
 prepare_text('part1')
 prepare_text('part2')
 
-widgets['scrollbar'] = tkinter.Scrollbar(frame_texts,
-                                         orient=tkinter.VERTICAL,
-                                         command=on_scroll_scrollbar)
+widgets['scrollbar'] = tkinter.Scrollbar(
+    frame_texts, orient=tkinter.VERTICAL, command=on_scroll_scrollbar)
 widgets['scrollbar'].pack(side=tkinter.RIGHT, fill=tkinter.Y)
 for widget in widgets:
     if widget.endswith('_text'):
         widgets[widget].config(yscrollcommand=on_scroll_text)
 
-tkinter.Button(frame_button, height=3, text='compare',
-               command=exec).pack(side=tkinter.BOTTOM,
-                                  expand=tkinter.YES,
-                                  fill=tkinter.X)
+tkinter.Button(
+    frame_button, height=3, text='compare', command=exec).pack(
+        side=tkinter.BOTTOM, expand=tkinter.YES, fill=tkinter.X)
 
 frame_texts.pack(expand=tkinter.YES, fill=tkinter.BOTH)
 frame_button.pack(expand=tkinter.YES, fill=tkinter.X)
