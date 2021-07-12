@@ -1,5 +1,7 @@
 import tkinter
 
+import src.sequence_editor as lib
+
 root = tkinter.Tk()
 root.title('SequenceHandler')
 widgets = dict()
@@ -45,80 +47,10 @@ def func_back():
     if len(history) > 1:
         del history[-1]
         update_text()
-
-
-def func_strip():
+        
+def func_callback(callback):
     if bool(history):
-        history.append(tuple(h.strip() for h in history[-1]))
-        update_text()
-
-
-def func_remove_duplicate():
-    if bool(history):
-        history.append(sorted(set(history[-1]), key=history[-1].index))
-        update_text()
-
-
-def func_neighboring_duplicate():
-    if bool(history):
-        history.append((history[-1][0],) + tuple(
-            el for i, el in enumerate(history[-1][1:]) if el != history[-1][i]))
-        update_text()
-
-
-def func_upper():
-    if bool(history):
-        history.append(tuple(h.upper() for h in history[-1]))
-        update_text()
-
-
-def func_lower():
-    if bool(history):
-        history.append(tuple(h.lower() for h in history[-1]))
-        update_text()
-
-
-def func_dec2hex():
-    if bool(history):
-        history.append(tuple(hex(int(h))[2:] for h in history[-1]))
-        update_text()
-
-
-def func_hex2dec():
-    if bool(history):
-        history.append(tuple(str(int(h, base=16)) for h in history[-1]))
-        update_text()
-
-
-def func_ascii2hex():
-    if bool(history):
-        history.append(
-            tuple(''.join([hex(ord(c))[2:] for c in h]) for h in history[-1]))
-        update_text()
-
-
-def func_hex2ascii():
-    if bool(history):
-        history.append(
-            tuple(''.join([
-                chr(int(h[i:min(len(h), i + 2)], base=16))
-                for i in range(0, len(h), 2)
-            ])
-                  for h in history[-1]))
-        update_text()
-
-
-def func_zero_padding_left():
-    if bool(history):
-        history.append(
-            tuple(h if len(h) % 2 == 0 else '0' + h for h in history[-1]))
-        update_text()
-
-
-def func_zero_padding_right():
-    if bool(history):
-        history.append(
-            tuple(h if len(h) % 2 == 0 else h + '0' for h in history[-1]))
+        history.append(callback(history[-1]))
         update_text()
 
 
@@ -138,40 +70,40 @@ tkinter.Button(
     frame_button, height=3, text='back', command=func_back).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='strip', command=func_strip).pack(
+    frame_button, height=3, text='strip', command=lambda cb=lib.handler_strip: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='unique', command=func_remove_duplicate).pack(
+    frame_button, height=3, text='unique', command=lambda cb=lib.handler_remove_duplicate: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
     frame_button,
     height=3,
     text='transitions',
-    command=func_neighboring_duplicate).pack(
+    command=lambda cb=lib.handler_neighboring_duplicate: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='upper', command=func_upper).pack(
+    frame_button, height=3, text='upper', command=lambda cb=lib.handler_upper: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='lower', command=func_lower).pack(
+    frame_button, height=3, text='lower', command=lambda cb=lib.handler_lower: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='dec2hex', command=func_dec2hex).pack(
+    frame_button, height=3, text='dec2hex', command=lambda cb=lib.handler_dec2hex: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='hex2dec', command=func_hex2dec).pack(
+    frame_button, height=3, text='hex2dec', command=lambda cb=lib.handler_hex2dec: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='hex2ascii', command=func_hex2ascii).pack(
+    frame_button, height=3, text='hex2ascii', command=lambda cb=lib.handler_hex2ascii: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='ascii2hex', command=func_ascii2hex).pack(
+    frame_button, height=3, text='ascii2hex', command=lambda cb=lib.handler_ascii2hex: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='0*', command=func_zero_padding_left).pack(
+    frame_button, height=3, text='0*', command=lambda cb=lib.handler_zero_padding_left: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='*0', command=func_zero_padding_right).pack(
+    frame_button, height=3, text='*0', command=lambda cb=lib.handler_zero_padding_right: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 
 frame_texts.pack(expand=tkinter.YES, fill=tkinter.BOTH)
