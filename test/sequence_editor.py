@@ -57,6 +57,14 @@ class TestCases(unittest.TestCase):
             lib.handler_hex2ascii(('616263', '414243', '313233', '61a', '61D')),
             ('abc', 'ABC', '123', 'a\n', 'a\r'))
 
+    def test_handler_reverse(self):
+        self.assertEqual(
+            lib.handler_reverse(('Dong#1?', ' ', '')), ('?1#gnoD', ' ', ''))
+
+    def test_handler_nonempty(self):
+        self.assertEqual(
+            lib.handler_nonempty(('Dong#1?', ' ', '')), ('Dong#1?', ' '))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -47,7 +47,8 @@ def func_back():
     if len(history) > 1:
         del history[-1]
         update_text()
-        
+
+
 def func_callback(callback):
     if bool(history):
         history.append(callback(history[-1]))
@@ -70,40 +71,83 @@ tkinter.Button(
     frame_button, height=3, text='back', command=func_back).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='strip', command=lambda cb=lib.handler_strip: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='strip',
+    command=lambda cb=lib.handler_strip: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='unique', command=lambda cb=lib.handler_remove_duplicate: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='unique',
+    command=lambda cb=lib.handler_remove_duplicate: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
     frame_button,
     height=3,
     text='transitions',
-    command=lambda cb=lib.handler_neighboring_duplicate: func_callback(cb)).pack(
+    command=lambda cb=lib.handler_neighboring_duplicate: func_callback(cb)
+).pack(
+    side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
+tkinter.Button(
+    frame_button,
+    height=3,
+    text='upper',
+    command=lambda cb=lib.handler_upper: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='upper', command=lambda cb=lib.handler_upper: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='lower',
+    command=lambda cb=lib.handler_lower: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='lower', command=lambda cb=lib.handler_lower: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='rev',
+    command=lambda cb=lib.handler_reverse: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='dec2hex', command=lambda cb=lib.handler_dec2hex: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='nonempty',
+    command=lambda cb=lib.handler_nonempty: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='hex2dec', command=lambda cb=lib.handler_hex2dec: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='dec2hex',
+    command=lambda cb=lib.handler_dec2hex: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='hex2ascii', command=lambda cb=lib.handler_hex2ascii: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='hex2dec',
+    command=lambda cb=lib.handler_hex2dec: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='ascii2hex', command=lambda cb=lib.handler_ascii2hex: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='hex2ascii',
+    command=lambda cb=lib.handler_hex2ascii: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='0*', command=lambda cb=lib.handler_zero_padding_left: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='ascii2hex',
+    command=lambda cb=lib.handler_ascii2hex: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 tkinter.Button(
-    frame_button, height=3, text='*0', command=lambda cb=lib.handler_zero_padding_right: func_callback(cb)).pack(
+    frame_button,
+    height=3,
+    text='0*',
+    command=lambda cb=lib.handler_zero_padding_left: func_callback(cb)).pack(
+        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
+tkinter.Button(
+    frame_button,
+    height=3,
+    text='*0',
+    command=lambda cb=lib.handler_zero_padding_right: func_callback(cb)).pack(
         side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 
 frame_texts.pack(expand=tkinter.YES, fill=tkinter.BOTH)

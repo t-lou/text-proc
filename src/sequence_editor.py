@@ -19,6 +19,14 @@ def handler_lower(strings: tuple) -> tuple:
     return tuple(h.lower() for h in strings)
 
 
+def handler_reverse(strings: tuple) -> tuple:
+    return tuple(h[::-1] for h in strings)
+
+
+def handler_nonempty(strings: tuple) -> tuple:
+    return tuple(h for h in strings if bool(h))
+
+
 def handler_dec2hex(strings: tuple) -> tuple:
     return tuple(hex(int(h))[2:] for h in strings)
 
