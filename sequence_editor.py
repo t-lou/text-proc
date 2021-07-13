@@ -3,42 +3,26 @@ import tkinter
 import src.sequence_editor as lib
 
 root = tkinter.Tk()
-root.title('SequenceHandler')
-widgets = dict()
+root.title('SequenceEditor')
 history = []
-
-
-def prepare_text(name: str):
-    # to initialize a text widget
-    assert all(not widget.startswith(name + '_') for widget in widgets)
-    name_text = name + '_text'
-    widgets[name_text] = tkinter.Text(frame_texts, height=50, width=80)
-    widgets[name_text].pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
-    # config for difference
-    widgets[name_text].tag_configure(
-        'diff', foreground='red', background='yellow')
-    widgets[name_text].tag_configure(
-        'should-partial', foreground='black', background='yellow')
+TEXT_HEIGHT = 50
+TEXT_WIDTH = 80
 
 
 def update_text():
     if bool(history):
-        widgets['updated_text'].delete('1.0', tkinter.END)
-        widgets['updated_text'].insert(tkinter.END, '\n'.join(history[-1]))
+        text_updated.delete('1.0', tkinter.END)
+        text_updated.insert(tkinter.END, '\n'.join(history[-1]))
 
 
 def func_reset():
     global history
-    history = [
-        tuple(
-            r for r in widgets['src_text'].get('1.0', tkinter.END).split('\n'))
-    ]
+    history = [tuple(r for r in text_src.get('1.0', tkinter.END).split('\n'))]
     update_text()
 
 
 def func_clear():
-    widgets['src_text'].delete('1.0', tkinter.END)
+    text_src.delete('1.0', tkinter.END)
     func_reset()
 
 
@@ -58,8 +42,10 @@ def func_callback(callback):
 frame_texts = tkinter.Frame(root)
 frame_button = tkinter.Frame(root)
 
-prepare_text('src')
-prepare_text('updated')
+text_src = tkinter.Text(frame_texts, height=TEXT_HEIGHT, width=TEXT_WIDTH)
+text_src.pack(side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
+text_updated = tkinter.Text(frame_texts, height=TEXT_HEIGHT, width=TEXT_WIDTH)
+text_updated.pack(side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
 
 tkinter.Button(
     frame_button, height=3, text='reset', command=func_reset).pack(
