@@ -31,8 +31,8 @@ def update_text():
 def func_reset():
     global history
     history = [
-        tuple(r for r in widgets['src_text'].get('1.0', tkinter.END).split('\n')
-              if bool(r))
+        tuple(
+            r for r in widgets['src_text'].get('1.0', tkinter.END).split('\n'))
     ]
     update_text()
 

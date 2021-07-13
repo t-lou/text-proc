@@ -10,8 +10,8 @@ class TestCases(unittest.TestCase):
 
     def test_handler_strip(self):
         self.assertEqual(
-            lib.handler_strip(('1', ' 2', '3 ', ' 4 ', '5  \n', '\t6\t\n')),
-            ('1', '2', '3', '4', '5', '6'))
+            lib.handler_strip(('1', ' 2', '3 ', ' 4 ', '5  \n', '\t6\t\n', '')),
+            ('1', '2', '3', '4', '5', '6', ''))
 
     def test_handler_remove_duplicate(self):
         self.assertEqual(
@@ -25,37 +25,39 @@ class TestCases(unittest.TestCase):
             ('1', '2', '3', '2', '1'))
 
     def test_handler_upper(self):
-        self.assertEqual(lib.handler_upper(('Dong#1?',)), ('DONG#1?',))
+        self.assertEqual(lib.handler_upper(('Dong#1?', '')), ('DONG#1?', ''))
 
     def test_handler_lower(self):
-        self.assertEqual(lib.handler_lower(('Dong#1?',)), ('dong#1?',))
+        self.assertEqual(lib.handler_lower(('Dong#1?', '')), ('dong#1?', ''))
 
     def test_handler_zero_padding_left(self):
         self.assertEqual(
-            lib.handler_zero_padding_left(('x', 'xx')), ('0x', 'xx'))
+            lib.handler_zero_padding_left(('x', 'xx', '')), ('0x', 'xx', ''))
 
     def test_handler_zero_padding_right(self):
         self.assertEqual(
-            lib.handler_zero_padding_right(('x', 'xx')), ('x0', 'xx'))
+            lib.handler_zero_padding_right(('x', 'xx', '')), ('x0', 'xx', ''))
 
     def test_handler_dec2hex(self):
         self.assertEqual(
-            lib.handler_dec2hex(('1', '16', '1000')), ('1', '10', '3e8'))
+            lib.handler_dec2hex(('1', '16', '1000', '')),
+            ('1', '10', '3e8', ''))
 
     def test_handler_hex2dec(self):
         self.assertEqual(
-            lib.handler_hex2dec(('1', '10', '3e8', '3E8')),
-            ('1', '16', '1000', '1000'))
+            lib.handler_hex2dec(('1', '10', '3e8', '3E8', '')),
+            ('1', '16', '1000', '1000', ''))
 
     def test_handler_ascii2hex(self):
         self.assertEqual(
-            lib.handler_ascii2hex(('abc', 'ABC', '123')),
-            ('616263', '414243', '313233'))
+            lib.handler_ascii2hex(('abc', 'ABC', '123', '')),
+            ('616263', '414243', '313233', ''))
 
     def test_handler_hex2ascii(self):
         self.assertEqual(
-            lib.handler_hex2ascii(('616263', '414243', '313233', '61a', '61D')),
-            ('abc', 'ABC', '123', 'a\n', 'a\r'))
+            lib.handler_hex2ascii(('616263', '414243', '313233', '61a', '61D',
+                                   '')),
+            ('abc', 'ABC', '123', 'a\n', 'a\r', ''))
 
     def test_handler_reverse(self):
         self.assertEqual(

@@ -28,21 +28,23 @@ def handler_nonempty(strings: tuple) -> tuple:
 
 
 def handler_dec2hex(strings: tuple) -> tuple:
-    return tuple(hex(int(h))[2:] for h in strings)
+    return tuple(hex(int(h))[2:] if bool(h) else '' for h in strings)
 
 
 def handler_hex2dec(strings: tuple) -> tuple:
-    return tuple(str(int(h, base=16)) for h in strings)
+    return tuple(str(int(h, base=16)) if bool(h) else '' for h in strings)
 
 
 def handler_ascii2hex(strings: tuple) -> tuple:
-    return tuple(''.join([hex(ord(c))[2:] for c in h]) for h in strings)
+    return tuple(''.join([hex(ord(c))[2:]
+                          for c in h]) if bool(h) else ''
+                 for h in strings)
 
 
 def handler_hex2ascii(strings: tuple) -> tuple:
     return tuple(''.join([
         chr(int(h[i:min(len(h), i + 2)], base=16)) for i in range(0, len(h), 2)
-    ]) for h in strings)
+    ]) if bool(h) else '' for h in strings)
 
 
 def handler_zero_padding_left(strings: tuple) -> tuple:
