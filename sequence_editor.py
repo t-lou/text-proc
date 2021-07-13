@@ -9,6 +9,10 @@ TEXT_HEIGHT = 50
 TEXT_WIDTH = 80
 
 
+def get_items(widget) -> tuple:
+    return tuple(widget.get('1.0', tkinter.END).split('\n'))
+
+
 def update_text():
     if bool(history):
         text_updated.delete('1.0', tkinter.END)
@@ -17,7 +21,7 @@ def update_text():
 
 def func_reset():
     global history
-    history = [tuple(r for r in text_src.get('1.0', tkinter.END).split('\n'))]
+    history = [get_items(text_src)]
     update_text()
 
 
@@ -35,6 +39,9 @@ def func_back():
 
 def func_callback(callback):
     if bool(history):
+        current = get_items(text_updated)
+        if current != history[-1]:
+            history.append(current)
         history.append(callback(history[-1]))
         update_text()
 
