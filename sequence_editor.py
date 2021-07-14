@@ -1,4 +1,5 @@
 import tkinter
+from collections.abc import Callable
 
 import src.sequence_editor as lib
 
@@ -37,7 +38,7 @@ def func_back():
         update_text()
 
 
-def func_callback(callback):
+def func_callback(callback: Callable[[tuple], tuple]):
     if bool(history):
         current = get_items(text_updated)
         if current != history[-1]:
@@ -54,94 +55,31 @@ text_src.pack(side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
 text_updated = tkinter.Text(frame_texts, height=TEXT_HEIGHT, width=TEXT_WIDTH)
 text_updated.pack(side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
 
-tkinter.Button(
-    frame_button, height=3, text='reset', command=func_reset).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button, height=3, text='clear', command=func_clear).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button, height=3, text='back', command=func_back).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='strip',
-    command=lambda cb=lib.handler_strip: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='unique',
-    command=lambda cb=lib.handler_remove_duplicate: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='transitions',
-    command=lambda cb=lib.handler_neighboring_duplicate: func_callback(cb)
-).pack(
-    side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='upper',
-    command=lambda cb=lib.handler_upper: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='lower',
-    command=lambda cb=lib.handler_lower: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='rev',
-    command=lambda cb=lib.handler_reverse: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='nonempty',
-    command=lambda cb=lib.handler_nonempty: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='dec2hex',
-    command=lambda cb=lib.handler_dec2hex: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='hex2dec',
-    command=lambda cb=lib.handler_hex2dec: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='hex2ascii',
-    command=lambda cb=lib.handler_hex2ascii: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='ascii2hex',
-    command=lambda cb=lib.handler_ascii2hex: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='0*',
-    command=lambda cb=lib.handler_zero_padding_left: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
-tkinter.Button(
-    frame_button,
-    height=3,
-    text='*0',
-    command=lambda cb=lib.handler_zero_padding_right: func_callback(cb)).pack(
-        side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
+info_buttons = (
+    ('reset', func_reset),
+    ('clear', func_clear),
+    ('back', func_back),
+    ('strip', lambda cb=lib.handler_strip: func_callback(cb)),
+    ('unique', lambda cb=lib.handler_remove_duplicate: func_callback(cb)),
+    ('transitions',
+     lambda cb=lib.handler_neighboring_duplicate: func_callback(cb)),
+    ('upper', lambda cb=lib.handler_upper: func_callback(cb)),
+    ('lower', lambda cb=lib.handler_lower: func_callback(cb)),
+    ('rev', lambda cb=lib.handler_reverse: func_callback(cb)),
+    ('nonempty', lambda cb=lib.handler_nonempty: func_callback(cb)),
+    ('dec2hex', lambda cb=lib.handler_dec2hex: func_callback(cb)),
+    ('hex2dec', lambda cb=lib.handler_hex2dec: func_callback(cb)),
+    ('hex2ascii', lambda cb=lib.handler_hex2ascii: func_callback(cb)),
+    ('ascii2hex', lambda cb=lib.handler_ascii2hex: func_callback(cb)),
+    ('0*', lambda cb=lib.handler_zero_padding_left: func_callback(cb)),
+    ('*0', lambda cb=lib.handler_zero_padding_right: func_callback(cb)),
+)
+
+for text, callback in info_buttons:
+    tkinter.Button(frame_button, height=3, text=text,
+                   command=callback).pack(side=tkinter.LEFT,
+                                          expand=tkinter.YES,
+                                          fill=tkinter.X)
 
 frame_texts.pack(expand=tkinter.YES, fill=tkinter.BOTH)
 frame_button.pack(expand=tkinter.YES, fill=tkinter.X)
