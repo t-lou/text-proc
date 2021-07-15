@@ -47,8 +47,8 @@ def func_callback(callback: Callable[[tuple], tuple]):
         update_text()
 
 
-frame_texts = tkinter.Frame(root)
 frame_button = tkinter.Frame(root)
+frame_texts = tkinter.Frame(root)
 
 text_src = tkinter.Text(frame_texts, height=TEXT_HEIGHT, width=TEXT_WIDTH)
 text_src.pack(side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
@@ -81,7 +81,7 @@ for text, callback in info_buttons:
                                           expand=tkinter.YES,
                                           fill=tkinter.X)
 
-frame_texts.pack(expand=tkinter.YES, fill=tkinter.BOTH)
 frame_button.pack(expand=tkinter.YES, fill=tkinter.X)
+frame_texts.pack(expand=tkinter.YES, fill=tkinter.BOTH)
 
 tkinter.mainloop()
