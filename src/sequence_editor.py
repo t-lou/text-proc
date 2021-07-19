@@ -1,7 +1,7 @@
-from collections.abc import Callable
+import typing
 
 
-def transform(strings: tuple, callback: Callable[[str], str]) -> tuple:
+def transform(strings: tuple, callback: typing.Callable[[str], str]) -> tuple:
     return tuple(callback(string) if bool(string) else '' for string in strings)
 
 

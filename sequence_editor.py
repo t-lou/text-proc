@@ -1,7 +1,6 @@
 import tkinter
 import tkinter.filedialog
 import json
-from collections.abc import Callable
 
 import src.sequence_editor as lib
 
