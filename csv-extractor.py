@@ -99,12 +99,10 @@ def func_extract(in_table_order: bool):
             gData['selected'] = tuple(row for row in gData['table']
                                       if row[column_in] in gData['target'])
         else:
-            selected = {
-                row[column_in]: row
-                for row in gData['table'] if row[column_in] in gData['target']
-            }
-            gData['selected'] = tuple(selected[t] for t in gData['target']
-                                      if t in selected)
+            selected = [[
+                row for row in gData['table'] if row[column_in] in (target, )
+            ] for target in gData['target']]
+            gData['selected'] = tuple(elem for row in selected for elem in row)
 
         text_summary_match.insert(tkinter.END,
                                   f'#match = {len(gData["selected"])}')
