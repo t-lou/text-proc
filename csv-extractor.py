@@ -4,6 +4,14 @@ import tkinter.filedialog
 import csv
 import sys
 
+gHasPandas = False
+try:
+    import pandas
+    import collections
+    gHasPandas = True
+except:
+    pass
+
 kWidthButton = 40
 kHeightButton = 3
 kWidthText = 100
@@ -45,12 +53,23 @@ def func_open():
     text_summary_csv.config(state='normal')
     text_summary_csv.delete('1.0', tkinter.END)
 
-    filename = tkinter.filedialog.askopenfilename(filetypes=[('CSV', '.csv')])
+    filetypes = [('CSV', '.csv'),
+                 ('XLSX', '.xlsx')] if gHasPandas else [('CSV', '.csv')]
+    filename = tkinter.filedialog.askopenfilename(filetypes=filetypes)
     if bool(filename):
-        with open(filename, 'r', encoding=kEncoding) as fi:
-            reader = csv.DictReader(fi)
-            gData['table'] = tuple(row for row in reader)
-            gData['fieldnames'] = tuple(reader.fieldnames)
+        if filename.endswith('.csv'):
+            with open(filename, 'r', encoding=kEncoding) as fi:
+                reader = csv.DictReader(fi)
+                gData['table'] = tuple(row for row in reader)
+                gData['fieldnames'] = tuple(reader.fieldnames)
+        else:
+            xlsx_data = pandas.read_excel(filename)
+            gData['table'] = tuple(
+                collections.OrderedDict({
+                    attr: row[i_attr]
+                    for i_attr, attr in enumerate(xlsx_data.keys())
+                }) for row in xlsx_data.astype(str).values.tolist())
+            gData['fieldnames'] = tuple(xlsx_data.keys())
 
         text_summary_csv.insert(
             tkinter.END,
@@ -84,8 +103,9 @@ def func_extract(in_table_order: bool):
                 row[column_in]: row
                 for row in gData['table'] if row[column_in] in gData['target']
             }
-            gData['selected'] = tuple(
-                selected[t] for t in gData['target'] if t in selected)
+            gData['selected'] = tuple(selected[t] for t in gData['target']
+                                      if t in selected)
+
         text_summary_match.insert(tkinter.END,
                                   f'#match = {len(gData["selected"])}')
         text_output.insert(
@@ -131,63 +151,70 @@ tkinter.Label(frame_widget, text='output columns').pack(side=tkinter.TOP)
 text_out_column = tkinter.Text(frame_widget, width=kHeightButton, height=2)
 text_out_column.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
 
-tkinter.Button(
-    frame_widget,
-    height=kHeightButton,
-    width=kWidthButton,
-    text='input targets',
-    command=func_input).pack(
-        side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+tkinter.Button(frame_widget,
+               height=kHeightButton,
+               width=kWidthButton,
+               text='input targets',
+               command=func_input).pack(side=tkinter.TOP,
+                                        expand=tkinter.YES,
+                                        fill=tkinter.BOTH)
 
-tkinter.Button(
-    frame_widget,
-    height=kHeightButton,
-    width=kWidthButton,
-    text='open',
-    command=func_open).pack(
-        side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+tkinter.Button(frame_widget,
+               height=kHeightButton,
+               width=kWidthButton,
+               text='open',
+               command=func_open).pack(side=tkinter.TOP,
+                                       expand=tkinter.YES,
+                                       fill=tkinter.BOTH)
 
-tkinter.Button(
-    frame_widget,
-    height=kHeightButton,
-    width=kWidthButton,
-    text='extract in table order',
-    command=lambda x=True: func_extract(x)).pack(
-        side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+tkinter.Button(frame_widget,
+               height=kHeightButton,
+               width=kWidthButton,
+               text='extract in table order',
+               command=lambda x=True: func_extract(x)).pack(side=tkinter.TOP,
+                                                            expand=tkinter.YES,
+                                                            fill=tkinter.BOTH)
 
-tkinter.Button(
-    frame_widget,
-    height=kHeightButton,
-    width=kWidthButton,
-    text='extract in target order',
-    command=lambda x=False: func_extract(x)).pack(
-        side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+tkinter.Button(frame_widget,
+               height=kHeightButton,
+               width=kWidthButton,
+               text='extract in target order',
+               command=lambda x=False: func_extract(x)).pack(
+                   side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
 
-tkinter.Button(
-    frame_widget,
-    height=kHeightButton,
-    width=kWidthButton,
-    text='save',
-    command=func_save).pack(
-        side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+tkinter.Button(frame_widget,
+               height=kHeightButton,
+               width=kWidthButton,
+               text='save',
+               command=func_save).pack(side=tkinter.TOP,
+                                       expand=tkinter.YES,
+                                       fill=tkinter.BOTH)
 
 tkinter.Label(frame_widget, text='summary target').pack(side=tkinter.TOP)
-text_summary_target = tkinter.Text(
-    frame_widget, width=kHeightButton, height=2, state=tkinter.DISABLED)
-text_summary_target.pack(
-    side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+text_summary_target = tkinter.Text(frame_widget,
+                                   width=kHeightButton,
+                                   height=2,
+                                   state=tkinter.DISABLED)
+text_summary_target.pack(side=tkinter.TOP,
+                         expand=tkinter.YES,
+                         fill=tkinter.BOTH)
 
 tkinter.Label(frame_widget, text='summary csv').pack(side=tkinter.TOP)
-text_summary_csv = tkinter.Text(
-    frame_widget, width=kHeightButton, height=2, state=tkinter.DISABLED)
+text_summary_csv = tkinter.Text(frame_widget,
+                                width=kHeightButton,
+                                height=2,
+                                state=tkinter.DISABLED)
 text_summary_csv.pack(side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
 text_summary_csv.bind('<1>', lambda event: text_summary_csv.focus_set())
 
 tkinter.Label(frame_widget, text='summary match').pack(side=tkinter.TOP)
-text_summary_match = tkinter.Text(
-    frame_widget, width=kHeightButton, height=2, state=tkinter.DISABLED)
-text_summary_match.pack(
-    side=tkinter.TOP, expand=tkinter.YES, fill=tkinter.BOTH)
+text_summary_match = tkinter.Text(frame_widget,
+                                  width=kHeightButton,
+                                  height=2,
+                                  state=tkinter.DISABLED)
+text_summary_match.pack(side=tkinter.TOP,
+                        expand=tkinter.YES,
+                        fill=tkinter.BOTH)
 
 frame_widget.pack(side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
 
